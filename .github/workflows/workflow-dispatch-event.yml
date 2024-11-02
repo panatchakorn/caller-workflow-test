@@ -1,4 +1,4 @@
-name: Trigger Another Workflow
+name: Workflow Dispatch Event
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
           event_type: test-event
           runner: ubuntu-latest
           environment: env2
-          description: Trigger test workflow
+          description: Workflow dispatch trigger test workflow
         run: |
           curl -L \
           -X POST \
