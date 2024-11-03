@@ -43,26 +43,26 @@ jobs:
             -d "{\"event_type\": \"$event_type\", \"client_payload\": {\"Runner\": \"$runner\", \"Environment\": \"$environment\", \"Description\": \"$description\"}}")
           echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           echo "$response"
-#          echo "response=response" >> $GITHUB_ENV
+
+        #          https://api.github.com/repos/$repo_owner/$repo_name/actions/runs)
+
+        #          run_id=$(echo $response | jq '.workflow_runs[0].id')
+        #          run_html_url=$(echo $response | jq -r '.workflow_runs[0].html_url')
+        #          run_number=$(echo $response | jq '.workflow_runs[0].run_number')
+
+        #          run_id=$(echo $response | jq -r --argjson latest_run_number "$latest_run_number" \
+        #            '.workflow_runs[] | select(.event == "repository_dispatch" and .display_title == "test-event" and .run_number > $latest_run_number) | .id' | head -n 1)
+        #          run_html_url=$(echo $response | jq -r --argjson latest_run_number "$latest_run_number" \
+        #            '.workflow_runs[] | select(.event == "repository_dispatch" and .display_title == "test-event" and .run_number > $latest_run_number) | .html_url' | head -n 1)
+        #          run_number=$(echo $response | jq -r --argjson latest_run_number "$latest_run_number" \
+        #            '.workflow_runs[] | select(.event == "repository_dispatch" and .display_title == "test-event" and .run_number > $latest_run_number) | .run_number' | head -n 1)
+
 
       - name: Get Triggered Workflow Run Details
         id: get_run_id
         env:
           repo_owner: panatchakorn
           repo_name: SeleniumJavaDemo
-          #          https://api.github.com/repos/$repo_owner/$repo_name/actions/runs)
-
-          #          run_id=$(echo $response | jq '.workflow_runs[0].id')
-          #          run_html_url=$(echo $response | jq -r '.workflow_runs[0].html_url')
-          #          run_number=$(echo $response | jq '.workflow_runs[0].run_number')
-
-          #          run_id=$(echo $response | jq -r --argjson latest_run_number "$latest_run_number" \
-          #            '.workflow_runs[] | select(.event == "repository_dispatch" and .display_title == "test-event" and .run_number > $latest_run_number) | .id' | head -n 1)
-          #          run_html_url=$(echo $response | jq -r --argjson latest_run_number "$latest_run_number" \
-          #            '.workflow_runs[] | select(.event == "repository_dispatch" and .display_title == "test-event" and .run_number > $latest_run_number) | .html_url' | head -n 1)
-          #          run_number=$(echo $response | jq -r --argjson latest_run_number "$latest_run_number" \
-          #            '.workflow_runs[] | select(.event == "repository_dispatch" and .display_title == "test-event" and .run_number > $latest_run_number) | .run_number' | head -n 1)
-
         run: |
           sleep 10
           response=$(curl -L \
@@ -73,7 +73,7 @@ jobs:
           echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           echo "$response"
           filtered_runs=$(echo $response | jq -r --argjson latest_run_number "$latest_run_number" \
-         '[.workflow_runs[] | select(.event == "repository_dispatch" and .display_title == "test-event" and .run_number > $latest_run_number)]')
+          '[.workflow_runs[] | select(.event == "repository_dispatch" and .display_title == "test-event" and .run_number > $latest_run_number)]')
           run_id=$(echo $filtered_runs | jq -r '.[0].id')
           run_html_url=$(echo $filtered_runs | jq -r '.[0].html_url')
           run_number=$(echo $filtered_runs | jq -r '.[0].run_number')
