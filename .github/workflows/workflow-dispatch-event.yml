@@ -57,9 +57,11 @@ jobs:
             https://api.github.com/repos/$repo_owner/$repo_name/actions/workflows/target-workflow.yml/runs?per_page=1)   
           echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           echo "$response"
-          run_id=$(echo $response | jq '.workflow_runs[0].id')
-          run_html_url=$(echo $response | jq -r '.workflow_runs[0].html_url')
-          run_number=$(echo $response | jq '.workflow_runs[0].run_number')
+          filtered_runs=$(echo $response | jq -r --argjson latest_run_number "$latest_run_number" \
+          '[.workflow_runs[] | select(.event == "workflow_dispatch" and .display_title == "Workflow dispatch trigger test workflow" and .run_number > $latest_run_number)]')
+          run_id=$(echo $filtered_runs | jq -r '.[0].id')
+          run_html_url=$(echo $filtered_runs | jq -r '.[0].html_url')
+          run_number=$(echo $filtered_runs | jq -r '.[0].run_number')
           echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           echo "run_id=$run_id" >> $GITHUB_ENV
           echo "run_html_url=$run_html_url" >> $GITHUB_ENV
@@ -67,3 +69,46 @@ jobs:
           echo "Run ID: $run_id"
           echo "Run URL: $run_html_url"
           echo "Run Number: $run_number"
+
+      - name: Wait for Triggered Workflow to Complete
+        id: wait
+        env:
+          repo_owner: panatchakorn
+          repo_name: SeleniumJavaDemo
+          run_id: ${{ env.run_id }}
+          run_html_url: ${{ env.run_html_url }}
+        run: |
+          conclusion=null
+          max_attempts=5  # Set a maximum number of attempts
+          attempts=0
+          sleep_time=10  # Initial sleep time in seconds
+          while [[ "$conclusion" == "null" && $attempts -lt $max_attempts ]]; do
+            sleep $sleep_time
+            conclusion=$(curl -L \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.TRIGGER_WORKFLOW_PAT }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/$repo_owner/$repo_name/actions/runs/$run_id \
+              | jq -r '.conclusion')
+            attempts=$((attempts + 1))
+            sleep_time=$((sleep_time * 2))  # Double the sleep time
+          done
+          if [[ "$conclusion" == "null" ]]; then
+            echo "Workflow did not complete within the expected time."
+            exit 1
+          fi
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+          echo "$conclusion"
+          echo "conclusion=$conclusion" >> $GITHUB_ENV
+          echo "Run URL: $run_html_url"
+
+      - name: Check Triggered Workflow Result
+        run: |
+          echo "Run URL: ${{ env.run_html_url }}"
+          echo "${{ env.conclusion }}"
+          if [ "${{ env.conclusion }}" != "success" ]; then
+            echo "Workflow failed to complete successfully."
+            exit 1
+          else
+            echo "Workflow completed successfully."
+          fi
