@@ -80,10 +80,13 @@ jobs:
           echo "run_id=$run_id" >> $GITHUB_ENV
           echo "run_html_url=$run_html_url" >> $GITHUB_ENV
           echo "run_number=$run_number" >> $GITHUB_ENV
+
+      - name: Get Triggered Workflow Run Details
+        run: |
           echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-          echo "Run ID: $run_id"
-          echo "Run URL: $run_html_url"
-          echo "Run Number: $run_number"
+          echo "Run ID: ${{ env.run_id }}
+          echo "Run URL: ${{ env.run_html_url }}
+          echo "Run Number: ${{ env.run_number }}
 
       - name: Wait for Triggered Workflow to Complete
         id: wait
