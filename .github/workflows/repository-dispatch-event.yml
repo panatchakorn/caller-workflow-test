@@ -81,9 +81,9 @@ jobs:
           echo "run_id=$run_id" >> $GITHUB_ENV
           echo "run_html_url=$run_html_url" >> $GITHUB_ENV
           echo "run_number=$run_number" >> $GITHUB_ENV
-          echo "Run ID: ${{ env.run_id }}"
-          echo "Run URL: ${{ env.run_html_url }}"
-          echo "Run Number: ${{ env.run_number }}"
+          echo "Run ID: $run_id"
+          echo "Run URL: $run_html_url"
+          echo "Run Number: $run_number"
 
       - name: Wait for Triggered Workflow to Complete
         id: wait
@@ -145,6 +145,7 @@ jobs:
           echo "Run URL: ${{ env.run_html_url }}"
           echo "${{ env.conclusion }}"
           if [ "${{ env.conclusion }}" != "success" ]; then
+            echo "Workflow failed to complete successfully."
             exit 1
           else
             echo "Workflow completed successfully."
