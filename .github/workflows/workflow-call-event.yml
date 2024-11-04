@@ -32,8 +32,8 @@ permissions:
 jobs:
     test:
       uses: 'panatchakorn/SeleniumJavaDemo/.github/workflows/target-workflow.yml@master'
-      secrets:
-        repo-token: ${{ secrets.TRIGGER_WORKFLOW_PAT }}
+      # secrets:
+      #   repo-token: ${{ secrets.TRIGGER_WORKFLOW_PAT }}
       with:
         Runner: ${{ github.event.inputs.Runner }}
         Environment: ${{ github.event.inputs.Environment }}
