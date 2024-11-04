@@ -1,0 +1,40 @@
+name: Workflow Call Event
+run-name: ${{ github.event.inputs.Description }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      Runner:
+        description: "runner to use"
+        required: true
+        type: choice
+        default: ubuntu-latest
+        options:
+        - ubuntu-latest
+        - runner2
+      Environment:
+        type: choice
+        description: "environment to use"
+        default: env1
+        options:
+        - env1
+        - env2
+        - env3
+      Description:
+        type: string
+        description: 'A description of the run'
+        default: Test run reusable workflow
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+    test:
+      uses: 'panatchakorn/SeleniumJavaDemo/actions/workflows/target-workflow.yml@master'
+      secrets:
+        repo-token: ${{ secrets.TRIGGER_WORKFLOW_PAT }}
+      with:
+        Runner: ${{ github.event.inputs.Runner }}
+        Environment: ${{ github.event.inputs.Environment }}
+        Description: ${{ github.event.inputs.Description }}
