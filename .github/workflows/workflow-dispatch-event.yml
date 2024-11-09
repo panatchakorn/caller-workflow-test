@@ -35,7 +35,7 @@ jobs:
           description: Workflow dispatch trigger test workflow
           stages_to_run: '{"Stage 1": true, "Stage 2": false}'
         run: |
-          request_data="{\"ref\":\"master\",\"inputs\":{\"Runner\":\"$runner\",\"Environment\":\"$environment\",\"Description\":\"$description\",\"StagesToRun\":\"$stages_to_run\"}}"
+          request_data="{\"ref\":\"master\",\"inputs\":{\"Runner\":\"$runner\",\"Environment\":\"$environment\",\"Description\":\"$description\",\"StagesToRun\":\"${stages_to_run//\"/\\\"}\"}}"
           echo "Request URL: https://api.github.com/repos/$repo_owner/$repo_name/actions/workflows/target-workflow.yml/dispatches"
           echo "Request Data: $request_data"
           response=$(curl -L \
@@ -47,7 +47,8 @@ jobs:
           -d "$request_data")
           echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           echo "$response"
-          echo "::set-output name=response::$response"
+          run: echo "response=$response" >> $GITHUB_OUTPUT
+
 #  -d "{\"ref\":\"master\",\"inputs\":{\"Runner\":\"$runner\",\"Environment\":\"$environment\",\"Description\":\"$description\",\"StagesToRun\":\"$stages_to_run\"}}")
 #  -d '{"ref":"master","inputs":{"Runner":"'"$runner"'","Environment":"'"$environment"'","Description":"'"$description"'","StagesToRun":"'"$stages_to_run"'"}}')
       - name: Get Triggered Workflow Run Details
