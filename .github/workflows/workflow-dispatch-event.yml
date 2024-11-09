@@ -25,6 +25,7 @@ jobs:
           echo "Latest Run Number: $latest_run_number"
 
       - name: Trigger Workflow in Another Repository
+        id: trigger_workflow
         env:
           repo_owner: panatchakorn
           repo_name: SeleniumJavaDemo
@@ -43,10 +44,11 @@ jobs:
           -d "{\"ref\":\"master\",\"inputs\":{\"Runner\":\"$runner\",\"Environment\":\"$environment\",\"Description\":\"$description\",\"StagesToRun\":\"$stages_to_run\"}}")          
           echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           echo "$response"
+          echo "::set-output name=response::$response"
 
 #  -d '{"ref":"master","inputs":{"Runner":"'"$runner"'","Environment":"'"$environment"'","Description":"'"$description"'","StagesToRun":"'"$stages_to_run"'"}}')
       - name: Get Triggered Workflow Run Details
-        if: success() && response == ''
+        if: success() && steps.trigger_workflow.outputs.response == ''
         id: get_run_id
         env:
           repo_owner: panatchakorn
@@ -74,7 +76,7 @@ jobs:
           echo "Run Number: $run_number"
 
       - name: Wait for Triggered Workflow to Complete
-        if: success() && run_number != null
+        if: success() && env.run_number != ''
         id: wait
         env:
           repo_owner: panatchakorn

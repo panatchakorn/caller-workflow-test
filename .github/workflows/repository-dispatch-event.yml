@@ -44,6 +44,7 @@ jobs:
             -d "{\"event_type\": \"$event_type\", \"client_payload\": {\"Runner\": \"$runner\", \"Environment\": \"$environment\", \"Description\": \"$description\", \"StagesToRun\": \"$stages_to_run\"}}")
           echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           echo "$response"
+          echo "::set-output name=response::$response"
 
 #          -d '{"event_type": "'"$event_type"'", "client_payload": {"Runner": "'"$runner"'", "Environment": "'"$environment"'", "Description": "'"$description"'", "StagesToRun":"'"$stages_to_run"'"}}')
 #-d "{\"event_type\": \"$event_type\", \"client_payload\": {\"Runner\": \"$runner\", \"Environment\": \"$environment\", \"Description\": \"$description\"}}")
@@ -62,6 +63,7 @@ jobs:
 
 
       - name: Get Triggered Workflow Run Details
+        if: success() && steps.trigger_workflow.outputs.response == ''
         id: get_run_id
         env:
           repo_owner: panatchakorn
@@ -89,6 +91,7 @@ jobs:
           echo "Run Number: $run_number"
 
       - name: Wait for Triggered Workflow to Complete
+        if: success() && env.run_number != ''
         id: wait
         env:
           repo_owner: panatchakorn
