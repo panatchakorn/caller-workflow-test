@@ -24,6 +24,11 @@ on:
         type: string
         description: 'A description of the run'
         default: Test run reusable workflow
+      StagesToRun:
+        type: string
+        description: 'Stages to run'
+        required: true
+        default: '{"Stage 1:true,"Stage 2": false}'
 
 permissions:
   contents: read
@@ -38,3 +43,4 @@ jobs:
         Runner: ${{ github.event.inputs.Runner }}
         Environment: ${{ github.event.inputs.Environment }}
         Description: ${{ github.event.inputs.Description }}
+        StagesToRun: ${{ github.event.inputs.StagesToRun }}
