@@ -33,6 +33,7 @@ jobs:
           runner: ubuntu-latest
           environment: env3
           description: Repository dispatch trigger test workflow
+          stages_to_run: '{"Stage 1": true, "Stage 2": false}'
         run: |  
           response=$(curl -L \
             -X POST \
@@ -40,7 +41,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.TRIGGER_WORKFLOW_PAT }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/$repo_owner/$repo_name/dispatches \
-            -d '{"event_type": "'"$event_type"'", "client_payload": {"Runner": "'"$runner"'", "Environment": "'"$environment"'", "Description": "'"$description"'"}}')
+            -d '{"event_type": "'"$event_type"'", "client_payload": {"Runner": "'"$runner"'", "Environment": "'"$environment"'", "Description": "'"$description"'", "StagesToRun":"'"$stages_to_run"'"}}')
           echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
           echo "$response"
 #-d "{\"event_type\": \"$event_type\", \"client_payload\": {\"Runner\": \"$runner\", \"Environment\": \"$environment\", \"Description\": \"$description\"}}")
