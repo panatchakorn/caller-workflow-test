@@ -25,6 +25,7 @@ jobs:
           echo "Latest Run Number: $latest_run_number"
 
       - name: Trigger Workflow in Another Repository
+        id: trigger_workflow
         env:
           # Set the required variables
           repo_owner: panatchakorn
